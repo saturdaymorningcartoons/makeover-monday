@@ -4,5 +4,8 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
     "webpack": "^3.6.0"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
   }
 }
