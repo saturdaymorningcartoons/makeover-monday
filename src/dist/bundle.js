@@ -1817,21 +1817,44 @@ d3.csv('src/data/restricted-dietary-requirements.csv', function (error, data) {
     return d.region;
   }))));
 
+  // map abbreviations to regions
+  var regionAbbreviations = new Map([['Asia-Pacific', 'ap'], ['Europe', 'e'], ['Africa/Middle East', 'ame'], ['Latin America', 'la'], ['North America', 'na']]);
+
   // nest data on diets
   var dietData = d3.nest().key(function (d) {
     return d.diet;
   }).entries(data);
 
-  //new Legend('#graph', dietData, regions, { top: 20, right: 10, bottom: 20, left: 10 }, document.querySelector('#graph').clientWidth / 6, document.querySelector('#graph').clientHeight / 2).init();
-
   // Let's start with one and see if we can eventually flip it on a 45deg upward angle
-  new _TriangleBarGraphic.TriangleBar('#graph', dietData[0], { top: 20, right: 20, bottom: 20, left: 30 }, document.querySelector('#graph').clientWidth, document.querySelector('#graph').clientHeight).init();
+  //new TriangleBar('#graph', dietData[0], regions, regionAbbreviations, { top: 20, right: 20, bottom: 20, left: 30 }, document.querySelector('#graph').clientWidth, document.querySelector('#graph').clientHeight).init();
 
   // space constraints are making me reconsider the small multiples idea for now – maybe if top axis was tilted on a 45deg upward angle
-  /*for (const diet of dietData) {
-    console.log(diet);
-    new TriangleBar('#graph', diet, { top: 20, right: 10, bottom: 20, left: 10 }, document.querySelector('#graph').clientWidth / 6, document.querySelector('#graph').clientHeight / 2).init();
-  }*/
+  new _Legend.Legend('#graph', dietData, regions, regionAbbreviations, { top: 20, right: 10, bottom: 20, left: 10 }, document.querySelector('#graph').clientWidth / 6, document.querySelector('#graph').clientHeight / 2).init();
+
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = dietData[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var diet = _step.value;
+
+      new _TriangleBarGraphic.TriangleBar('#graph', diet, regions, regionAbbreviations, { top: 20, right: 10, bottom: 20, left: 25 }, document.querySelector('#graph').clientWidth / 6, document.querySelector('#graph').clientHeight / 2).smallMultiples();
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
 });
 
 /***/ }),
@@ -1852,12 +1875,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var d3 = __webpack_require__(0);
 
 var Legend = exports.Legend = function () {
-  function Legend(el, d, r, m, w, h) {
+  function Legend(el, d, r, rm, m, w, h) {
     _classCallCheck(this, Legend);
 
     this.mount = el;
     this.data = d;
     this.regions = r;
+    this.regionsMap = rm;
     this.margin = m;
     this.width = w - this.margin.right - this.margin.left;
     this.height = h - this.margin.bottom - this.margin.top;
@@ -1866,16 +1890,13 @@ var Legend = exports.Legend = function () {
   _createClass(Legend, [{
     key: 'init',
     value: function init() {
+      var _this = this;
+
       // mount legend to DOM
       var legend = d3.select(this.mount).append('svg').attr('width', this.width + this.margin.right + this.margin.left).attr('height', this.height + this.margin.bottom + this.margin.top).append('g').attr('transform', 'translate(' + this.margin.left + ', ' + this.margin.top + ')');
 
-      legend.append('rect').attr('width', this.width).attr('height', this.height).attr('fill', '#fff').attr('stroke', '#2fc3c7');
-
-      // map abbreviations to regions
-      var regionAbbreviations = new Map([['Asia-Pacific', 'ap'], ['Europe', 'e'], ['Africa/Middle East', 'ame'], ['Latin America', 'la'], ['North America', 'na']]);
-
       this.regions.map(function (region, i) {
-        legend.append('text').attr('class', 'legend-text').attr('x', 15).attr('y', i * 18 + 15).text(regionAbbreviations.get(region) + ': ' + region);
+        legend.append('text').attr('class', 'legend-text').attr('x', 15).attr('y', i * 18 + 15).text(_this.regionsMap.get(region) + ': ' + region);
       });
     }
   }]);
@@ -1901,11 +1922,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var d3 = __webpack_require__(0);
 
 var TriangleBar = exports.TriangleBar = function () {
-  function TriangleBar(el, d, m, w, h) {
+  function TriangleBar(el, d, r, rm, m, w, h) {
     _classCallCheck(this, TriangleBar);
 
     this.mount = el;
     this.data = d;
+    this.regions = r;
+    this.regionsMap = rm;
     this.margin = m;
     this.width = w - this.margin.right - this.margin.left;
     this.height = h - this.margin.bottom - this.margin.top;
@@ -1936,6 +1959,43 @@ var TriangleBar = exports.TriangleBar = function () {
       // divide the length of the 60deg side by √3 to get the length of the 30deg side
       var points = function points(d) {
         return x(d.region) + x.bandwidth() / 2 - (y(d.followers_pct) - y(0)) / Math.sqrt(3) + ',' + y(0) + ' ' + (x(d.region) + x.bandwidth() / 2 + (y(d.followers_pct) - y(0)) / Math.sqrt(3)) + ',' + y(0) + ' ' + (x(d.region) + x.bandwidth() / 2) + ',' + y(d.followers_pct);
+      };
+
+      graph.selectAll('.triangle').data(this.data.values).enter().append('polygon').attr('class', 'triangle').attr('points', points).style('fill', '#fff').style('stroke', '#2fc3c7');
+    }
+  }, {
+    key: 'smallMultiples',
+    value: function smallMultiples() {
+      var _this = this;
+
+      // mount svg element to DOM
+      var graph = d3.select(this.mount).append('svg').attr('width', this.width + this.margin.right + this.margin.left).attr('height', this.height + this.margin.bottom + this.margin.top).append('g').attr('transform', 'translate(' + this.margin.left + ', ' + this.margin.top + ')');
+
+      var x = d3.scaleBand().rangeRound([0, this.width]).padding(0.1);
+      var y = d3.scaleLinear().rangeRound([this.height, 0]);
+
+      var xValues = [];
+      this.regions.map(function (region) {
+        return xValues.push(_this.regionsMap.get(region));
+      });
+
+      var xAxis = d3.axisBottom(x);
+      var yAxis = d3.axisLeft(y).ticks(4);
+
+      x.domain(this.data.values.map(function (d) {
+        return _this.regionsMap.get(d.region);
+      }));
+
+      y.domain([0, 100]);
+
+      graph.append('g').attr('class', 'x-axis').attr('transform', 'translate(0, ' + this.height + ')').call(xAxis);
+
+      graph.append('g').attr('class', 'y-axis').call(yAxis);
+
+      // create the points for an equilateral triangle
+      // divide the length of the 60deg side by √3 to get the length of the 30deg side
+      var points = function points(d) {
+        return x(_this.regionsMap.get(d.region)) + x.bandwidth() / 2 - (y(d.followers_pct) - y(0)) / Math.sqrt(3) + ',' + y(0) + ' ' + (x(_this.regionsMap.get(d.region)) + x.bandwidth() / 2 + (y(d.followers_pct) - y(0)) / Math.sqrt(3)) + ',' + y(0) + ' ' + (x(_this.regionsMap.get(d.region)) + x.bandwidth() / 2) + ',' + y(d.followers_pct);
       };
 
       graph.selectAll('.triangle').data(this.data.values).enter().append('polygon').attr('class', 'triangle').attr('points', points).style('fill', '#fff').style('stroke', '#2fc3c7');
