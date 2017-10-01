@@ -23,7 +23,7 @@ d3.csv('src/data/restricted-dietary-requirements.csv', (error, data) => {
   //new Legend('#graph', dietData, regions, { top: 20, right: 10, bottom: 20, left: 10 }, document.querySelector('#graph').clientWidth / 6, document.querySelector('#graph').clientHeight / 2).init();
 
   // Let's start with one and see if we can eventually flip it on a 45deg upward angle
-  new TriangleBar('#graph', dietData[1], { top: 20, right: 20, bottom: 20, left: 30 }, document.querySelector('#graph').clientWidth, document.querySelector('#graph').clientHeight).init();
+  new TriangleBar('#graph', dietData[0], { top: 20, right: 20, bottom: 20, left: 30 }, document.querySelector('#graph').clientWidth, document.querySelector('#graph').clientHeight).init();
 
   // space constraints are making me reconsider the small multiples idea for now – maybe if top axis was tilted on a 45deg upward angle
   /*for (const diet of dietData) {

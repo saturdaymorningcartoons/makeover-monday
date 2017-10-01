@@ -1825,7 +1825,7 @@ d3.csv('src/data/restricted-dietary-requirements.csv', function (error, data) {
   //new Legend('#graph', dietData, regions, { top: 20, right: 10, bottom: 20, left: 10 }, document.querySelector('#graph').clientWidth / 6, document.querySelector('#graph').clientHeight / 2).init();
 
   // Let's start with one and see if we can eventually flip it on a 45deg upward angle
-  new _TriangleBarGraphic.TriangleBar('#graph', dietData[1], { top: 20, right: 20, bottom: 20, left: 30 }, document.querySelector('#graph').clientWidth, document.querySelector('#graph').clientHeight).init();
+  new _TriangleBarGraphic.TriangleBar('#graph', dietData[0], { top: 20, right: 20, bottom: 20, left: 30 }, document.querySelector('#graph').clientWidth, document.querySelector('#graph').clientHeight).init();
 
   // space constraints are making me reconsider the small multiples idea for now – maybe if top axis was tilted on a 45deg upward angle
   /*for (const diet of dietData) {
@@ -1933,8 +1933,9 @@ var TriangleBar = exports.TriangleBar = function () {
       graph.append('g').attr('class', 'y-axis').call(yAxis);
 
       // create the points for an equilateral triangle
+      // divide the length of the 60deg side by √3 to get the length of the 30deg side
       var points = function points(d) {
-        return x(d.region) + x.bandwidth() / 2 - (y(d.followers_pct) - y(0)) + ',' + y(0) + ' ' + (x(d.region) + x.bandwidth() / 2 + (y(d.followers_pct) - y(0))) + ',' + y(0) + ' ' + (x(d.region) + x.bandwidth() / 2) + ',' + y(d.followers_pct);
+        return x(d.region) + x.bandwidth() / 2 - (y(d.followers_pct) - y(0)) / Math.sqrt(3) + ',' + y(0) + ' ' + (x(d.region) + x.bandwidth() / 2 + (y(d.followers_pct) - y(0)) / Math.sqrt(3)) + ',' + y(0) + ' ' + (x(d.region) + x.bandwidth() / 2) + ',' + y(d.followers_pct);
       };
 
       graph.selectAll('.triangle').data(this.data.values).enter().append('polygon').attr('class', 'triangle').attr('points', points).style('fill', '#fff').style('stroke', '#2fc3c7');

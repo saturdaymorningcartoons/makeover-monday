@@ -38,7 +38,8 @@ export class TriangleBar {
        .call(yAxis);
 
     // create the points for an equilateral triangle
-    const points = d => `${(x(d.region) + (x.bandwidth() / 2)) - (y(d.followers_pct) - y(0))},${y(0)} ${(x(d.region) + (x.bandwidth() / 2)) + (y(d.followers_pct) - y(0))},${y(0)} ${x(d.region) + (x.bandwidth() / 2)},${y(d.followers_pct)}`;
+    // divide the length of the 60deg side by √3 to get the length of the 30deg side
+    const points = d => `${(x(d.region) + (x.bandwidth() / 2)) - ((y(d.followers_pct) - y(0)) / Math.sqrt(3))},${y(0)} ${(x(d.region) + (x.bandwidth() / 2)) + ((y(d.followers_pct) - y(0)) / Math.sqrt(3))},${y(0)} ${x(d.region) + (x.bandwidth() / 2)},${y(d.followers_pct)}`;
 
     graph.selectAll('.triangle')
         .data(this.data.values)
