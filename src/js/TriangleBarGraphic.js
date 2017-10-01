@@ -19,11 +19,33 @@ export class TriangleBar {
       .append('g')
         .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
-    graph.append('rect')
-        .attr('width', this.width)
-        .attr('height', this.height)
-        .attr('stroke', '#444');
+    const x = d3.scaleBand().rangeRound([0, this.width]).padding(0.1);
+    const y = d3.scaleLinear().rangeRound([this.height, 0]);
 
-    console.log(this.data);
+    const xAxis = d3.axisBottom(x);
+    const yAxis = d3.axisLeft(y).ticks(4);
+
+    x.domain(this.data.values.map(d => d.region));
+    y.domain([0, 100]);
+
+    graph.append('g')
+       .attr('class', 'x-axis')
+       .attr('transform', `translate(0, ${this.height})`)
+       .call(xAxis);
+
+    graph.append('g')
+       .attr('class', 'y-axis')
+       .call(yAxis);
+
+    // create the points for an equilateral triangle
+    const points = d => `${(x(d.region) + (x.bandwidth() / 2)) - (y(d.followers_pct) - y(0))},${y(0)} ${(x(d.region) + (x.bandwidth() / 2)) + (y(d.followers_pct) - y(0))},${y(0)} ${x(d.region) + (x.bandwidth() / 2)},${y(d.followers_pct)}`;
+
+    graph.selectAll('.triangle')
+        .data(this.data.values)
+      .enter().append('polygon')
+         .attr('class', 'triangle')
+         .attr('points', points)
+         .style('fill', '#fff')
+         .style('stroke', '#2fc3c7');
   }
 }

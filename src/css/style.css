@@ -24,3 +24,8 @@ main {
   width: 100%;
   height: 30%;
 }
+
+path,
+line {
+  display: none;
+}
