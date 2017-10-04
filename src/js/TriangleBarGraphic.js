@@ -27,7 +27,7 @@ export class TriangleBar {
     const y = d3.scaleLinear().rangeRound([this.height, 0]);
 
     const xAxis = d3.axisBottom(x);
-    const yAxis = d3.axisLeft(y).ticks(4);
+    const yAxis = d3.axisLeft(y).tickFormat(d => `${d}%`).ticks(4);
 
     x.domain(this.data.values.map(d => d.region));
     y.domain([0, 100]);
@@ -76,7 +76,7 @@ export class TriangleBar {
       xValues.push(this.regionsMap.get(region)));
 
     const xAxis = d3.axisTop(x);
-    const yAxis = d3.axisLeft(y).ticks(4);
+    const yAxis = d3.axisLeft(y).tickFormat(d => `${d}%`).ticks(4);
 
     x.domain(this.data.values.map(d =>
       this.regionsMap.get(d.region)));
@@ -96,6 +96,30 @@ export class TriangleBar {
        .filter(t => t === 100 || t === 0)
        .remove();
 
+    graph.selectAll('.x-axis .tick')
+        .each(function(t, i){
+          d3.select(this)
+              .on('mouseover', function(d) {
+                // select graph
+                const parent = d3.select(this.parentNode.parentNode);
+                parent.selectAll('.triangle')
+                    .each(function(tri, j) {
+                      if (j != i) {
+                        d3.select(this).transition(200).style('opacity', '0.3');
+                      } else {
+                        const data = d3.select(this).data();
+                        parent.select('.percentage').transition(200).style('opacity', 1).text(data[0].followers)
+                      }
+                    });
+              })
+              .on('mouseout', function() {
+                const parent = d3.select(this.parentNode.parentNode);
+                const triangles = parent.selectAll('.triangle');
+                triangles.transition(200).style('opacity', 1);
+                parent.select('.percentage').transition(200).style('opacity', 0).text('');
+              });
+        });
+
     // create the points for an equilateral triangle
     // divide the length of the 60deg side by √3 to get the length of the 30deg side
     const points = d => `${(x(this.regionsMap.get(d.region)) + (x.bandwidth() / 2)) - ((y(d.followers_pct) - y(0)) / Math.sqrt(3))},${y(0)} ${(x(this.regionsMap.get(d.region)) + (x.bandwidth() / 2)) + ((y(d.followers_pct) - y(0)) / Math.sqrt(3))},${y(0)} ${x(this.regionsMap.get(d.region)) + (x.bandwidth() / 2)},${y(d.followers_pct)}`;
@@ -105,7 +129,29 @@ export class TriangleBar {
       .enter().append('polygon')
          .attr('class', 'triangle')
          .attr('points', points)
-         .style('fill', d => colors(d.region));
+         .style('fill', d => colors(d.region))
+         .each(function(t, i){
+           d3.select(this)
+               .on('mouseover', function(d) {
+                 // select graph
+                 const parent = d3.select(this.parentNode);
+                 parent.selectAll('.triangle')
+                     .each(function(tri, j) {
+                       if (j != i) {
+                         d3.select(this).transition(200).style('opacity', '0.3');
+                       } else {
+                         const data = d3.select(this).data();
+                         parent.select('.percentage').transition(200).style('opacity', 1).text(data[0].followers)
+                       }
+                     });
+                 })
+                 .on('mouseout', function() {
+                   const parent = d3.select(this.parentNode.parentNode);
+                   const triangles = parent.selectAll('.triangle');
+                   triangles.transition(200).style('opacity', 1);
+                   parent.select('.percentage').transition(200).style('opacity', 0).text('');
+                 });
+          });
 
     const diet = this.data.values[0].diet;
 
@@ -114,5 +160,11 @@ export class TriangleBar {
        .attr('x', (this.width / 2) - (diet.length / 2 * 8))
        .attr('y', -25)
        .text(diet);
+
+    graph.append('text')
+       .attr('class', 'percentage')
+       .attr('x', (this.width / 2) - (3 * 8))
+       .attr('y', this.height)
+       .text('');
   }
 }
