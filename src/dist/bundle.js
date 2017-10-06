@@ -2363,6 +2363,7 @@ var Legend = exports.Legend = function () {
     this.margin = m;
     this.width = w - this.margin.right - this.margin.left;
     this.height = h - this.margin.bottom - this.margin.top;
+    this.colors = ['rgba(30,29,73,1)', 'rgba(103,72,168,1)', 'rgba(127,68,158,1)', 'rgba(151,61,147,1)', 'rgba(251,167,215,1)'];
   }
 
   _createClass(Legend, [{
@@ -2374,7 +2375,7 @@ var Legend = exports.Legend = function () {
       var legend = d3.select(this.mount).append('svg').attr('width', this.width + this.margin.right + this.margin.left).attr('height', this.height + this.margin.bottom + this.margin.top).append('g').attr('transform', 'translate(' + this.margin.left + ', ' + this.margin.top + ')');
 
       this.regions.map(function (region, i) {
-        legend.append('text').attr('class', 'legend-text').attr('x', 15).attr('y', i * 18 + 15).text(_this.regionsMap.get(region) + ': ' + region);
+        legend.append('text').attr('class', 'legend-text').attr('x', 15).attr('y', i * 18 + 15).style('fill', _this.colors[i]).text(_this.regionsMap.get(region) + ': ' + region);
       });
     }
   }]);
@@ -2502,14 +2503,14 @@ var TriangleBar = exports.TriangleBar = function () {
               d3.select(this).transition(200).style('opacity', '0.3');
             } else {
               var data = d3.select(this).data();
-              parent.select('.percentage').transition(200).style('opacity', 1).text(data[0].followers);
+              parent.select('.percentage-callout').transition(200).style('opacity', 1).text(data[0].followers);
             }
           });
         }).on('mouseout', function () {
           var parent = d3.select(this.parentNode.parentNode);
           var triangles = parent.selectAll('.triangle');
           triangles.transition(200).style('opacity', 1);
-          parent.select('.percentage').transition(200).style('opacity', 0).text('');
+          parent.select('.percentage-callout').transition(200).style('opacity', 0).text('');
         });
       });
 
@@ -2530,14 +2531,14 @@ var TriangleBar = exports.TriangleBar = function () {
               d3.select(this).transition(200).style('opacity', '0.3');
             } else {
               var data = d3.select(this).data();
-              parent.select('.percentage').transition(200).style('opacity', 1).text(data[0].followers);
+              parent.select('.percentage-callout').transition(200).style('opacity', 1).text(data[0].followers);
             }
           });
         }).on('mouseout', function () {
           var parent = d3.select(this.parentNode.parentNode);
           var triangles = parent.selectAll('.triangle');
           triangles.transition(200).style('opacity', 1);
-          parent.select('.percentage').transition(200).style('opacity', 0).text('');
+          parent.select('.percentage-callout').transition(200).style('opacity', 0).text('');
         });
       });
 
@@ -2545,7 +2546,7 @@ var TriangleBar = exports.TriangleBar = function () {
 
       graph.append('text').attr('class', 'graph-label').attr('x', this.width / 2 - diet.length / 2 * 8).attr('y', -25).text(diet);
 
-      graph.append('text').attr('class', 'percentage').attr('x', this.width / 2 - 3 * 8).attr('y', this.height).text('');
+      graph.append('text').attr('class', 'percentage-callout').attr('x', this.width / 2 - 3 * 8).attr('y', this.height).text('');
     }
   }]);
 

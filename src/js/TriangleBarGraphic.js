@@ -108,7 +108,7 @@ export class TriangleBar {
                         d3.select(this).transition(200).style('opacity', '0.3');
                       } else {
                         const data = d3.select(this).data();
-                        parent.select('.percentage').transition(200).style('opacity', 1).text(data[0].followers)
+                        parent.select('.percentage-callout').transition(200).style('opacity', 1).text(data[0].followers)
                       }
                     });
               })
@@ -116,7 +116,7 @@ export class TriangleBar {
                 const parent = d3.select(this.parentNode.parentNode);
                 const triangles = parent.selectAll('.triangle');
                 triangles.transition(200).style('opacity', 1);
-                parent.select('.percentage').transition(200).style('opacity', 0).text('');
+                parent.select('.percentage-callout').transition(200).style('opacity', 0).text('');
               });
         });
 
@@ -141,7 +141,7 @@ export class TriangleBar {
                          d3.select(this).transition(200).style('opacity', '0.3');
                        } else {
                          const data = d3.select(this).data();
-                         parent.select('.percentage').transition(200).style('opacity', 1).text(data[0].followers)
+                         parent.select('.percentage-callout').transition(200).style('opacity', 1).text(data[0].followers)
                        }
                      });
                  })
@@ -149,7 +149,7 @@ export class TriangleBar {
                    const parent = d3.select(this.parentNode.parentNode);
                    const triangles = parent.selectAll('.triangle');
                    triangles.transition(200).style('opacity', 1);
-                   parent.select('.percentage').transition(200).style('opacity', 0).text('');
+                   parent.select('.percentage-callout').transition(200).style('opacity', 0).text('');
                  });
           });
 
@@ -162,7 +162,7 @@ export class TriangleBar {
        .text(diet);
 
     graph.append('text')
-       .attr('class', 'percentage')
+       .attr('class', 'percentage-callout')
        .attr('x', (this.width / 2) - (3 * 8))
        .attr('y', this.height)
        .text('');

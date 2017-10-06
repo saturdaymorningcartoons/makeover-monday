@@ -10,6 +10,7 @@ export class Legend {
     this.margin = m;
     this.width = w - this.margin.right - this.margin.left;
     this.height = h - this.margin.bottom - this.margin.top; 
+    this.colors = ['rgba(30,29,73,1)', 'rgba(103,72,168,1)', 'rgba(127,68,158,1)', 'rgba(151,61,147,1)', 'rgba(251,167,215,1)'];
   }
 
   init() {
@@ -26,6 +27,7 @@ export class Legend {
           .attr('class', 'legend-text')
           .attr('x', 15)
           .attr('y', (i * 18) + 15)
+          .style('fill', this.colors[i])
           .text(`${this.regionsMap.get(region)}: ${region}`);
     });
         
