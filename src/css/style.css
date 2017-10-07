@@ -27,7 +27,7 @@ main {
 }
 
 h1 {
-  font-family: "AHAMONO", sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 18px;
   font-weight: 700;
 }
@@ -46,10 +46,29 @@ text {
   font-family: "Inconsolata", sans-serif;
 }
 
+.x-axis .tick {
+  cursor: default;
+}
+
 .legend-text {
+  font-family: "Open Sans", sans-serif;
   font-size: 10px;
+}
+
+text.graph-label {
+  font-family: "Open Sans", sans-serif;
 }
 
 .percentage-callout {
   font-size: 32px;
+}
+
+a {
+  text-decoration: none;
+  color: #606060;
+  transition: color .3s ease;
+}
+
+a:hover {
+ color: rgba(151,61,147,1);
 }
